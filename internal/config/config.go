@@ -9,7 +9,7 @@ import (
 // ResolveConfigPath returns the config directory path based on priority:
 // 1. User-specified flag (passed as argument)
 // 2. Repo-local: .srs/ directory (if exists) or project root
-// 3. Fallback: ~/.config/srs/
+// 3. Fallback: ~/.local/share/srs/
 func ResolveConfigPath(userSpecified string) (string, error) {
 	// Priority 1: User-specified path
 	if userSpecified != "" {
@@ -44,13 +44,13 @@ func ResolveConfigPath(userSpecified string) (string, error) {
 		return gitRoot, nil
 	}
 
-	// Priority 3: Fallback to ~/.config/srs/
+	// Priority 3: Fallback to ~/.local/share/srs/
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("failed to get home directory: %w", err)
 	}
 
-	fallbackPath := filepath.Join(homeDir, ".config", "srs")
+	fallbackPath := filepath.Join(homeDir, ".local", "share", "srs")
 	if err := ensureDir(fallbackPath); err != nil {
 		return "", err
 	}
