@@ -1,0 +1,40 @@
+run:
+  timeout: 5m
+  tests: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  govet:
+    check-shadowing: true
+  staticcheck:
+    checks: ["all"]
+  gosimple:
+    checks: ["all"]
+  unused:
+    check-exported: true
+  gofmt:
+    simplify: true
+  goimports:
+    local-prefixes: srs
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosimple
+    - unused
+    - gofmt
+    - goimports
+    - ineffassign
+    - typecheck
+    - unconvert
+    - misspell
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
