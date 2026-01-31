@@ -8,6 +8,7 @@ import (
 	"srs/internal/config"
 	"srs/internal/domain"
 	"srs/internal/store"
+	"srs/internal/ui"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
@@ -83,21 +84,27 @@ func truncateText(text string, maxLen int) string {
 }
 
 // formatSearchResult formats a search result for display
-func formatSearchResult(result *SearchResult) string {
+func formatSearchResult(result *SearchResult, query string) string {
 	var sb strings.Builder
 
 	// Card ID (shortened)
 	cardIDStr := result.CardID.String()
-	sb.WriteString(fmt.Sprintf("ID: %s", cardIDStr[:8]))
+	sb.WriteString(fmt.Sprintf("ID: %s", ui.ColorID(cardIDStr[:8])))
 	sb.WriteString("\n")
 
 	// Match field and text
-	sb.WriteString(fmt.Sprintf("  Match in %s: %s", result.MatchField, result.MatchText))
+	matchFieldColored := ui.ColorMatchField(result.MatchField)
+	matchTextColored := ui.ColorMatch(result.MatchText)
+	sb.WriteString(fmt.Sprintf("  Match in %s: %s", matchFieldColored, matchTextColored))
 	sb.WriteString("\n")
 
 	// Tags
 	if len(result.Tags) > 0 {
-		sb.WriteString(fmt.Sprintf("  Tags: %s", strings.Join(result.Tags, ", ")))
+		tagList := make([]string, len(result.Tags))
+		for i, tag := range result.Tags {
+			tagList[i] = ui.ColorTag(tag)
+		}
+		sb.WriteString(fmt.Sprintf("  Tags: %s", strings.Join(tagList, ", ")))
 	} else {
 		sb.WriteString("  Tags: (none)")
 	}
@@ -138,16 +145,16 @@ var findCmd = &cobra.Command{
 
 		// Display results
 		if len(results) == 0 {
-			fmt.Printf("No cards found matching: %s\n", query)
+			fmt.Printf("No cards found matching: %s\n", ui.ColorMatch(query))
 			return
 		}
 
-		fmt.Printf("Found %d match(es) for: %s\n\n", len(results), query)
+		fmt.Printf("Found %d match(es) for: %s\n\n", len(results), ui.ColorMatch(query))
 		for i, result := range results {
 			if i > 0 {
 				fmt.Println()
 			}
-			fmt.Print(formatSearchResult(result))
+			fmt.Print(formatSearchResult(result, query))
 		}
 	},
 }

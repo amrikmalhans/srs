@@ -162,12 +162,13 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 		}
 
 		// Show progress
-		fmt.Printf("\n--- Card %d/%d ---\n\n", i+1, len(filteredStates))
+		cardHeader := fmt.Sprintf("--- Card %d/%d ---", i+1, len(filteredStates))
+		fmt.Printf("\n%s\n\n", ui.ColorCardHeader(cardHeader))
 
 		// Show question with wrapping
 		renderedQuestion := ui.RenderCardContent(question, terminalWidth)
-		fmt.Println(renderedQuestion)
-		fmt.Println("\n[Press space or enter to reveal answer]")
+		fmt.Println(ui.ColorQuestion(renderedQuestion))
+		fmt.Println(ui.ColorPrompt("\n[Press space or enter to reveal answer]"))
 
 		// Wait for space or enter
 		for {
@@ -183,8 +184,13 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 
 		// Show answer with wrapping
 		renderedAnswer := ui.RenderCardContent(answer, terminalWidth)
-		fmt.Println("\n" + renderedAnswer)
-		fmt.Println("\nGrade: 1=Again, 2=Hard, 3=Good, 4=Easy")
+		fmt.Println("\n" + ui.ColorAnswer(renderedAnswer))
+		gradePrompt := fmt.Sprintf("\nGrade: %s=%s, %s=%s, %s=%s, %s=%s",
+			ui.ColorGrade(1, "1"), ui.ColorGrade(1, "Again"),
+			ui.ColorGrade(2, "2"), ui.ColorGrade(2, "Hard"),
+			ui.ColorGrade(3, "3"), ui.ColorGrade(3, "Good"),
+			ui.ColorGrade(4, "4"), ui.ColorGrade(4, "Easy"))
+		fmt.Println(gradePrompt)
 
 		// Wait for grade
 		var grade scheduler.Grade
@@ -236,7 +242,7 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 
 // displaySessionSummary displays the session summary
 func displaySessionSummary(stats *SessionStats) {
-	fmt.Printf("\n--- Session Summary ---\n")
+	fmt.Printf("\n%s\n", ui.ColorSummary("--- Session Summary ---"))
 	fmt.Printf("Reviewed: %d\n", stats.Reviewed)
 	fmt.Printf("Again: %d\n", stats.Again)
 	if stats.NextDue != nil {

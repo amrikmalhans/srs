@@ -6,6 +6,7 @@ import (
 
 	"srs/internal/config"
 	"srs/internal/store"
+	"srs/internal/ui"
 
 	"github.com/spf13/cobra"
 )
@@ -30,7 +31,7 @@ var listCmd = &cobra.Command{
 		}
 
 		// Print total count
-		fmt.Printf("Total cards: %d\n\n", len(cards))
+		fmt.Printf("%s: %d\n\n", ui.ColorSummary("Total cards"), len(cards))
 
 		// Aggregate tags
 		tagCounts := make(map[string]int)
@@ -42,7 +43,7 @@ var listCmd = &cobra.Command{
 
 		// Print tag statistics
 		if len(tagCounts) > 0 {
-			fmt.Println("Tags:")
+			fmt.Println(ui.ColorSummary("Tags:"))
 			// Sort tags for consistent output
 			var tags []string
 			for tag := range tagCounts {
@@ -51,10 +52,10 @@ var listCmd = &cobra.Command{
 			sort.Strings(tags)
 
 			for _, tag := range tags {
-				fmt.Printf("  %s: %d\n", tag, tagCounts[tag])
+				fmt.Printf("  %s: %d\n", ui.ColorTag(tag), tagCounts[tag])
 			}
 		} else {
-			fmt.Println("Tags: (none)")
+			fmt.Println(ui.ColorSummary("Tags: (none)"))
 		}
 	},
 }

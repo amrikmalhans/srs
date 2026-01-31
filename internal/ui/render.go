@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/fatih/color"
 	"golang.org/x/term"
 )
 
@@ -181,4 +182,88 @@ func RenderCardContent(content string, width int) string {
 	}
 
 	return strings.TrimRight(result.String(), "\n")
+}
+
+// ColorCardHeader returns a colorized string for card headers.
+// Uses subtle cyan/blue for visual separation.
+func ColorCardHeader(text string) string {
+	return color.New(color.FgHiCyan).Sprint(text)
+}
+
+// ColorQuestion returns a colorized string for question text.
+// Uses subtle yellow for questions.
+func ColorQuestion(text string) string {
+	return color.New(color.FgHiYellow).Sprint(text)
+}
+
+// ColorAnswer returns a colorized string for answer text.
+// Uses subtle green for answers.
+func ColorAnswer(text string) string {
+	return color.New(color.FgHiGreen).Sprint(text)
+}
+
+// ColorPrompt returns a colorized string for prompts and instructions.
+// Uses subtle gray for prompts.
+func ColorPrompt(text string) string {
+	return color.New(color.FgHiBlack).Sprint(text)
+}
+
+// ColorGrade returns a colorized string for grading options.
+// Uses different colors: 1=Again (red), 2=Hard (yellow), 3=Good (green), 4=Easy (cyan).
+func ColorGrade(gradeNum int, text string) string {
+	var c *color.Color
+	switch gradeNum {
+	case 1: // Again
+		c = color.New(color.FgHiRed)
+	case 2: // Hard
+		c = color.New(color.FgHiYellow)
+	case 3: // Good
+		c = color.New(color.FgHiGreen)
+	case 4: // Easy
+		c = color.New(color.FgHiCyan)
+	default:
+		return text
+	}
+	return c.Sprint(text)
+}
+
+// ColorTag returns a colorized string for tags.
+// Uses subtle blue/cyan for tags.
+func ColorTag(text string) string {
+	return color.New(color.FgHiBlue).Sprint(text)
+}
+
+// ColorID returns a colorized string for card IDs.
+// Uses subtle gray for IDs.
+func ColorID(text string) string {
+	return color.New(color.FgHiBlack).Sprint(text)
+}
+
+// ColorMatch returns a colorized string for search matches.
+// Uses subtle magenta for highlights.
+func ColorMatch(text string) string {
+	return color.New(color.FgHiMagenta).Sprint(text)
+}
+
+// ColorSummary returns a colorized string for summary headers.
+// Uses subtle bold cyan for summary headers.
+func ColorSummary(text string) string {
+	return color.New(color.FgHiCyan, color.Bold).Sprint(text)
+}
+
+// ColorMatchField returns a colorized string for match field indicators (Q, A, tag).
+// Uses different colors: Q (yellow), A (green), tag (blue).
+func ColorMatchField(field string) string {
+	var c *color.Color
+	switch field {
+	case "Q":
+		c = color.New(color.FgHiYellow)
+	case "A":
+		c = color.New(color.FgHiGreen)
+	case "tag":
+		c = color.New(color.FgHiBlue)
+	default:
+		return field
+	}
+	return c.Sprint(field)
 }
