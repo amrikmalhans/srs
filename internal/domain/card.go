@@ -1,3 +1,6 @@
+// Package domain defines the core domain models for the SRS tool.
+// It contains the Card, CardMeta, and ReviewState types that represent
+// the business entities, along with validation and utility methods.
 package domain
 
 import (

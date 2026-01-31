@@ -1,3 +1,6 @@
+// Package cmd implements the CLI commands for the SRS tool.
+// It provides commands for managing flashcards, reviewing cards, syncing the database,
+// and other operations. All commands use Cobra for command-line interface handling.
 package cmd
 
 import (
@@ -56,7 +59,8 @@ func initConfig() {
 		// Resolve config path
 		configPath, err := config.ResolveConfigPath("")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error resolving config path: %v\n", err)
+			// Non-fatal error during initialization, just log and continue
+			fmt.Fprintf(os.Stderr, "Warning: failed to resolve config path: %v\n", err)
 			return
 		}
 

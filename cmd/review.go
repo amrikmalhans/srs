@@ -210,7 +210,7 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 		clock := scheduler.NewRealClock()
 		updatedState := scheduler.UpdateReviewState(clock, state, grade)
 		if err := db.UpsertReviewState(database, updatedState); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to update review state: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Warning: failed to update review state: %v\n", err)
 			continue
 		}
 
@@ -252,35 +252,23 @@ var reviewCmd = &cobra.Command{
 	Short: "Start a review session",
 	Long:  `Start a review session showing due cards. Press space to reveal answer, then grade with 1-4.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Get config path and database path
-		configPath, err := config.ResolveConfigPath("")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to resolve config path: %v\n", err)
-			os.Exit(1)
-		}
-
-		dbPath := config.DatabasePath(configPath)
-
 		// Open database
-		database, err := db.OpenDB(dbPath)
+		database, err := openDatabase()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to open database: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to open database")
 		}
 		defer db.CloseDB(database)
 
 		// Get cards path
 		cardsPath, err := config.CardsPath()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get cards path: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get cards path")
 		}
 
 		// Run review session
 		stats, err := runReviewSession(database, cardsPath, countFlag, minutesFlag, tagFlags, excludeTagFlags)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
+			handleError(err, "review session failed")
 		}
 
 		// Display summary if any cards were reviewed

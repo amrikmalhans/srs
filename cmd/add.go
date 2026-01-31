@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"srs/internal/config"
 	"srs/internal/domain"
@@ -22,8 +21,7 @@ var addCmd = &cobra.Command{
 		// Get cards path
 		cardsPath, err := config.CardsPath()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get cards path: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get cards path")
 		}
 
 		// Create new card with template content
@@ -32,8 +30,7 @@ var addCmd = &cobra.Command{
 		// Create store and write card
 		s := store.NewStore(cardsPath)
 		if err := s.CreateCard(card); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to create card: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to create card")
 		}
 
 		// Print success message

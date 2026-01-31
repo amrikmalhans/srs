@@ -14,16 +14,8 @@ import (
 
 // runSprintProgrammatically runs the sprint command programmatically
 func runSprintProgrammatically() error {
-	// Get config path and database path
-	configPath, err := config.ResolveConfigPath("")
-	if err != nil {
-		return fmt.Errorf("failed to resolve config path: %w", err)
-	}
-
-	dbPath := config.DatabasePath(configPath)
-
 	// Open database
-	database, err := db.OpenDB(dbPath)
+	database, err := openDatabase()
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
@@ -35,8 +27,8 @@ func runSprintProgrammatically() error {
 		return fmt.Errorf("failed to get cards path: %w", err)
 	}
 
-	// Run review session with 2-minute limit (no tag filters)
-	stats, err := runReviewSession(database, cardsPath, 0, 2, []string{}, []string{})
+	// Run review session with default sprint duration (no tag filters)
+	stats, err := runReviewSession(database, cardsPath, UnlimitedCount, DefaultSprintMinutes, []string{}, []string{})
 	if err != nil {
 		return fmt.Errorf("review session failed: %w", err)
 	}
@@ -66,6 +58,16 @@ Example:
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		commandStr := args[0]
+
+		// Validate command string
+		if commandStr == "" {
+			fmt.Fprintf(os.Stderr, "Error: command cannot be empty\n")
+			os.Exit(1)
+		}
+		if len(commandStr) > 10000 {
+			fmt.Fprintf(os.Stderr, "Error: command too long (max 10000 characters)\n")
+			os.Exit(1)
+		}
 
 		// Execute the command using shell
 		execCmd := exec.Command("sh", "-c", commandStr)

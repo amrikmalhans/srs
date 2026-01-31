@@ -1,3 +1,7 @@
+// Package store handles file system operations for card storage.
+// It provides functions for reading, writing, parsing, and scanning markdown card files.
+// Cards are stored as individual markdown files with YAML frontmatter containing
+// metadata (ID, created timestamp, tags) and markdown content for questions and answers.
 package store
 
 import (

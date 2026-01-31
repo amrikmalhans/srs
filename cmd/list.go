@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"sort"
 
 	"srs/internal/config"
@@ -20,16 +19,14 @@ var listCmd = &cobra.Command{
 		// Get cards path
 		cardsPath, err := config.CardsPath()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get cards path: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get cards path")
 		}
 
 		// Scan all cards
 		s := store.NewStore(cardsPath)
 		cards, err := s.ScanCards()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to scan cards: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to scan cards")
 		}
 
 		// Print total count

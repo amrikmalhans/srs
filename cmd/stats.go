@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
-	"srs/internal/config"
 	"srs/internal/db"
 
 	"github.com/spf13/cobra"
@@ -16,35 +14,23 @@ var statsCmd = &cobra.Command{
 	Short: "Show statistics from database",
 	Long:  `Display due card count and new card count from database.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Get config path and database path
-		configPath, err := config.ResolveConfigPath("")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to resolve config path: %v\n", err)
-			os.Exit(1)
-		}
-
-		dbPath := config.DatabasePath(configPath)
-
 		// Open database (create if doesn't exist)
-		database, err := db.OpenDB(dbPath)
+		database, err := openDatabase()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to open database: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to open database")
 		}
 		defer db.CloseDB(database)
 
 		// Get due count
 		dueCount, err := db.GetDueCount(database)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get due count: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get due count")
 		}
 
 		// Get new count
 		newCount, err := db.GetNewCount(database)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get new count: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get new count")
 		}
 
 		// Display statistics

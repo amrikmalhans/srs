@@ -1,3 +1,7 @@
+// Package scheduler implements the SM-2 spaced repetition algorithm.
+// It provides functions to update card review state based on user ratings,
+// calculating next review dates and adjusting ease factors according to the
+// SuperMemo 2 algorithm. The package uses a Clock interface for deterministic testing.
 package scheduler
 
 import (

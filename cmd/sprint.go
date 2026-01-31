@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"srs/internal/config"
 	"srs/internal/db"
@@ -16,36 +15,24 @@ var sprintCmd = &cobra.Command{
 	Short: "Start a 2-minute review session",
 	Long:  `Start a quick 2-minute review session. This is an alias for 'review --minutes 2' with session summary.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Get config path and database path
-		configPath, err := config.ResolveConfigPath("")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to resolve config path: %v\n", err)
-			os.Exit(1)
-		}
-
-		dbPath := config.DatabasePath(configPath)
-
 		// Open database
-		database, err := db.OpenDB(dbPath)
+		database, err := openDatabase()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to open database: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to open database")
 		}
 		defer db.CloseDB(database)
 
 		// Get cards path
 		cardsPath, err := config.CardsPath()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get cards path: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get cards path")
 		}
 
 		// Get tag filters from flags (shared with review command)
-		// Run review session with 2-minute limit
-		stats, err := runReviewSession(database, cardsPath, 0, 2, tagFlags, excludeTagFlags)
+		// Run review session with default sprint duration
+		stats, err := runReviewSession(database, cardsPath, UnlimitedCount, DefaultSprintMinutes, tagFlags, excludeTagFlags)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
+			handleError(err, "review session failed")
 		}
 
 		// Always display summary for sprint

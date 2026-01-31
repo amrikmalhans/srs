@@ -1,3 +1,6 @@
+// Package ui provides terminal rendering utilities for the SRS tool.
+// It handles text wrapping, terminal width detection, and smart rendering
+// of card content including code fences that should not be wrapped.
 package ui
 
 import (

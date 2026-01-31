@@ -1,3 +1,8 @@
+// Package config handles configuration path resolution for the SRS tool.
+// It determines the appropriate location for the database and configuration files
+// based on priority: user-specified paths, repository-local directories, or
+// fallback to user home directory. It also provides utilities for resolving
+// the cards directory path.
 package config
 
 import (

@@ -1,3 +1,7 @@
+// Package db provides database operations for the SRS tool.
+// It manages SQLite database connections, schema initialization, and CRUD operations
+// for card metadata and review state. The database tracks scheduling information
+// while card content is stored as markdown files.
 package db
 
 import (

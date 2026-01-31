@@ -105,38 +105,25 @@ var editCmd = &cobra.Command{
 		// Get cards path
 		cardsPath, err := config.CardsPath()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get cards path: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get cards path")
 		}
-
-		// Get config path and database path
-		configPath, err := config.ResolveConfigPath("")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to resolve config path: %v\n", err)
-			os.Exit(1)
-		}
-
-		dbPath := config.DatabasePath(configPath)
 
 		// Open database
-		database, err := db.OpenDB(dbPath)
+		database, err := openDatabase()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to open database: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to open database")
 		}
 		defer db.CloseDB(database)
 
 		// Find card file
 		filePath, err := findCardByID(cardsPath, database, cardID)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to find card")
 		}
 
 		// Open in editor
 		if err := openInEditor(filePath); err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to open editor")
 		}
 	},
 }

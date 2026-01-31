@@ -25,32 +25,20 @@ var syncCmd = &cobra.Command{
 		// Get cards path
 		cardsPath, err := config.CardsPath()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get cards path: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get cards path")
 		}
-
-		// Get config path and database path
-		configPath, err := config.ResolveConfigPath("")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to resolve config path: %v\n", err)
-			os.Exit(1)
-		}
-
-		dbPath := config.DatabasePath(configPath)
 
 		// Open database
-		database, err := db.OpenDB(dbPath)
+		database, err := openDatabase()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to open database: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to open database")
 		}
 		defer db.CloseDB(database)
 
 		// Get all existing card IDs from database
 		existingCardIDs, err := db.GetAllCardIDs(database)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to get existing card IDs: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to get existing card IDs")
 		}
 
 		// Create a map for quick lookup
@@ -62,8 +50,7 @@ var syncCmd = &cobra.Command{
 		// Scan all markdown files
 		filePaths, err := store.ScanCardFiles(cardsPath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: failed to scan card files: %v\n", err)
-			os.Exit(1)
+			handleError(err, "failed to scan card files")
 		}
 
 		// Process each file
