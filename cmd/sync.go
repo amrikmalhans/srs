@@ -9,6 +9,7 @@ import (
 	"srs/internal/config"
 	"srs/internal/db"
 	"srs/internal/domain"
+	"srs/internal/scheduler"
 	"srs/internal/store"
 
 	"github.com/google/uuid"
@@ -106,7 +107,7 @@ var syncCmd = &cobra.Command{
 					CardID:         card.ID,
 					DueAt:          time.Now(), // Due immediately
 					IntervalDays:   0,
-					Ease:           2.5, // Default SM-2 ease factor
+					Ease:           scheduler.DefaultEase, // Default SM-2 ease factor
 					Reps:           0,
 					Lapses:         0,
 					LastReviewedAt: nil,

@@ -152,7 +152,8 @@ var reviewCmd = &cobra.Command{
 			}
 
 			// Update review state
-			updatedState := scheduler.UpdateReviewState(state, grade)
+			clock := scheduler.NewRealClock()
+			updatedState := scheduler.UpdateReviewState(clock, state, grade)
 			if err := db.UpsertReviewState(database, updatedState); err != nil {
 				fmt.Fprintf(os.Stderr, "Error: failed to update review state: %v\n", err)
 				continue
@@ -173,4 +174,3 @@ func init() {
 	reviewCmd.Flags().IntVar(&countFlag, "count", 0, "Maximum number of cards to review (0 = unlimited)")
 	reviewCmd.Flags().IntVar(&minutesFlag, "minutes", 0, "Maximum time in minutes (0 = unlimited)")
 }
-
