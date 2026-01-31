@@ -202,6 +202,38 @@ func GetAllCardIDs(db *sql.DB) ([]uuid.UUID, error) {
 	return cardIDs, nil
 }
 
+// GetAllReviewStateCardIDs returns all card IDs that have review states
+func GetAllReviewStateCardIDs(db *sql.DB) ([]uuid.UUID, error) {
+	query := `SELECT card_id FROM review_state`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query review state card IDs: %w", err)
+	}
+	defer rows.Close()
+
+	var cardIDs []uuid.UUID
+	for rows.Next() {
+		var cardIDStr string
+		if err := rows.Scan(&cardIDStr); err != nil {
+			return nil, fmt.Errorf("failed to scan card ID: %w", err)
+		}
+
+		cardID, err := uuid.Parse(cardIDStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse card ID: %w", err)
+		}
+
+		cardIDs = append(cardIDs, cardID)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating review state card IDs: %w", err)
+	}
+
+	return cardIDs, nil
+}
+
 // GetDueCount returns the number of cards that are due for review
 func GetDueCount(db *sql.DB) (int, error) {
 	query := `

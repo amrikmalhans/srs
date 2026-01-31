@@ -47,6 +47,18 @@ var syncCmd = &cobra.Command{
 			existingCardMap[id] = true
 		}
 
+		// Get all existing review state card IDs to check which cards need review states
+		existingReviewStates, err := db.GetAllReviewStateCardIDs(database)
+		if err != nil {
+			handleError(err, "failed to get existing review state card IDs")
+		}
+
+		// Create a map for quick lookup
+		existingReviewStateMap := make(map[uuid.UUID]bool)
+		for _, id := range existingReviewStates {
+			existingReviewStateMap[id] = true
+		}
+
 		// Scan all markdown files
 		filePaths, err := store.ScanCardFiles(cardsPath)
 		if err != nil {
@@ -88,8 +100,15 @@ var syncCmd = &cobra.Command{
 			// Check if card is new (not in database)
 			isNew := !existingCardMap[card.ID]
 
+			// Check if review state exists (card might exist but review state was reset)
+			needsReviewState := !existingReviewStateMap[card.ID]
+
 			if isNew {
-				// Create default review state for new cards
+				newCount++
+			}
+
+			if isNew || needsReviewState {
+				// Create default review state for new cards or cards missing review state
 				reviewState := &domain.ReviewState{
 					CardID:         card.ID,
 					DueAt:          time.Now(), // Due immediately
@@ -104,8 +123,6 @@ var syncCmd = &cobra.Command{
 					errors = append(errors, fmt.Sprintf("failed to create review state for %s: %v", card.ID.String(), err))
 					continue
 				}
-
-				newCount++
 			}
 
 			processedCount++
