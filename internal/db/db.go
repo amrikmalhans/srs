@@ -388,3 +388,29 @@ func GetNextDueTime(db *sql.DB) (*time.Time, error) {
 
 	return &dueAt, nil
 }
+
+// DeleteAllReviewStates deletes all review state records from the database.
+// This resets all scheduling information, making all cards appear as new.
+func DeleteAllReviewStates(db *sql.DB) error {
+	query := `DELETE FROM review_state`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		return fmt.Errorf("failed to delete review states: %w", err)
+	}
+
+	return nil
+}
+
+// GetReviewStateCount returns the total number of review state records.
+func GetReviewStateCount(db *sql.DB) (int, error) {
+	query := `SELECT COUNT(*) FROM review_state`
+
+	var count int
+	err := db.QueryRow(query).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get review state count: %w", err)
+	}
+
+	return count, nil
+}
