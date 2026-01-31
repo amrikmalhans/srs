@@ -56,4 +56,3 @@ var statsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(statsCmd)
 }
-

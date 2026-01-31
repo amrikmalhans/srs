@@ -7,8 +7,8 @@ import (
 
 	"srs/internal/domain"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/google/uuid"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // OpenDB opens or creates a SQLite database at the given path
@@ -231,4 +231,89 @@ func GetNewCount(db *sql.DB) (int, error) {
 	}
 
 	return count, nil
+}
+
+// GetDueCards returns all due cards ordered by due_at ASC
+// If limit is <= 0, no limit is applied
+func GetDueCards(db *sql.DB, limit int) ([]*domain.ReviewState, error) {
+	now := time.Now().Format(time.RFC3339)
+
+	var query string
+	var args []interface{}
+
+	if limit > 0 {
+		query = `
+			SELECT card_id, due_at, interval_days, ease, reps, lapses, last_reviewed_at
+			FROM review_state
+			WHERE due_at <= ?
+			ORDER BY due_at ASC
+			LIMIT ?
+		`
+		args = []interface{}{now, limit}
+	} else {
+		query = `
+			SELECT card_id, due_at, interval_days, ease, reps, lapses, last_reviewed_at
+			FROM review_state
+			WHERE due_at <= ?
+			ORDER BY due_at ASC
+		`
+		args = []interface{}{now}
+	}
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query due cards: %w", err)
+	}
+	defer rows.Close()
+
+	var states []*domain.ReviewState
+	for rows.Next() {
+		var state domain.ReviewState
+		var cardIDStr, dueAtStr string
+		var lastReviewedAtStr sql.NullString
+
+		err := rows.Scan(
+			&cardIDStr,
+			&dueAtStr,
+			&state.IntervalDays,
+			&state.Ease,
+			&state.Reps,
+			&state.Lapses,
+			&lastReviewedAtStr,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan review state: %w", err)
+		}
+
+		// Parse card ID
+		cardID, err := uuid.Parse(cardIDStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse card ID: %w", err)
+		}
+		state.CardID = cardID
+
+		// Parse due_at
+		dueAt, err := time.Parse(time.RFC3339, dueAtStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse due_at: %w", err)
+		}
+		state.DueAt = dueAt
+
+		// Parse last_reviewed_at if present
+		if lastReviewedAtStr.Valid {
+			lastReviewedAt, err := time.Parse(time.RFC3339, lastReviewedAtStr.String)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse last_reviewed_at: %w", err)
+			}
+			state.LastReviewedAt = &lastReviewedAt
+		}
+
+		states = append(states, &state)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating due cards: %w", err)
+	}
+
+	return states, nil
 }

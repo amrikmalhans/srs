@@ -135,3 +135,67 @@ func parseQASections(body string) (string, error) {
 
 	return content.String(), nil
 }
+
+// ExtractQuestion extracts the Q section from card content
+// Returns the question text without the "# Q" header
+func ExtractQuestion(content string) string {
+	lines := strings.Split(content, "\n")
+
+	var qStart, qEnd int = -1, -1
+
+	// Find # Q header
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "# Q" {
+			qStart = i
+		} else if trimmed == "# A" && qStart != -1 {
+			qEnd = i
+			break
+		}
+	}
+
+	if qStart == -1 {
+		return ""
+	}
+
+	if qEnd == -1 {
+		qEnd = len(lines)
+	}
+
+	// Extract content between # Q and # A (or end)
+	if qStart+1 < qEnd {
+		qContent := strings.Join(lines[qStart+1:qEnd], "\n")
+		return strings.TrimSpace(qContent)
+	}
+
+	return ""
+}
+
+// ExtractAnswer extracts the A section from card content
+// Returns the answer text without the "# A" header
+func ExtractAnswer(content string) string {
+	lines := strings.Split(content, "\n")
+
+	var aStart int = -1
+
+	// Find # A header
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "# A" {
+			aStart = i
+			break
+		}
+	}
+
+	if aStart == -1 {
+		return ""
+	}
+
+	// Extract content from # A to end
+	if aStart+1 < len(lines) {
+		aContent := strings.Join(lines[aStart+1:], "\n")
+		return strings.TrimSpace(aContent)
+	}
+
+	return ""
+}
