@@ -35,8 +35,8 @@ func runSprintProgrammatically() error {
 		return fmt.Errorf("failed to get cards path: %w", err)
 	}
 
-	// Run review session with 2-minute limit
-	stats, err := runReviewSession(database, cardsPath, 0, 2)
+	// Run review session with 2-minute limit (no tag filters)
+	stats, err := runReviewSession(database, cardsPath, 0, 2, []string{}, []string{})
 	if err != nil {
 		return fmt.Errorf("review session failed: %w", err)
 	}

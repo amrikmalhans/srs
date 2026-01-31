@@ -40,8 +40,9 @@ var sprintCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		// Get tag filters from flags (shared with review command)
 		// Run review session with 2-minute limit
-		stats, err := runReviewSession(database, cardsPath, 0, 2)
+		stats, err := runReviewSession(database, cardsPath, 0, 2, tagFlags, excludeTagFlags)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
@@ -60,4 +61,8 @@ var sprintCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(sprintCmd)
+
+	// Add tag filter flags (shared with review command)
+	sprintCmd.Flags().StringArrayVar(&tagFlags, "tag", []string{}, "Include only cards with this tag (can be repeated)")
+	sprintCmd.Flags().StringArrayVar(&excludeTagFlags, "exclude-tag", []string{}, "Exclude cards with this tag (can be repeated)")
 }

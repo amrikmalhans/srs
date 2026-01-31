@@ -318,6 +318,43 @@ func GetDueCards(db *sql.DB, limit int) ([]*domain.ReviewState, error) {
 	return states, nil
 }
 
+// GetCardMeta retrieves card metadata by card ID
+func GetCardMeta(db *sql.DB, cardID uuid.UUID) (*domain.CardMeta, error) {
+	query := `
+		SELECT card_id, path, updated_at
+		FROM cards_meta
+		WHERE card_id = ?
+	`
+
+	var meta domain.CardMeta
+	var cardIDStr, path, updatedAtStr string
+
+	err := db.QueryRow(query, cardID.String()).Scan(&cardIDStr, &path, &updatedAtStr)
+	if err == sql.ErrNoRows {
+		return nil, nil // Card meta not found, but not an error
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get card meta: %w", err)
+	}
+
+	// Parse card ID
+	parsedID, err := uuid.Parse(cardIDStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse card ID: %w", err)
+	}
+	meta.CardID = parsedID
+	meta.Path = path
+
+	// Parse updated_at
+	updatedAt, err := time.Parse(time.RFC3339, updatedAtStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse updated_at: %w", err)
+	}
+	meta.UpdatedAt = updatedAt
+
+	return &meta, nil
+}
+
 // GetNextDueTime returns the earliest due_at time for cards that are currently due.
 // Returns nil if no cards are due, or an error if the query fails.
 func GetNextDueTime(db *sql.DB) (*time.Time, error) {

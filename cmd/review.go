@@ -11,14 +11,18 @@ import (
 
 	"srs/internal/config"
 	"srs/internal/db"
+	"srs/internal/domain"
 	"srs/internal/scheduler"
 	"srs/internal/store"
+	"srs/internal/ui"
 
 	"github.com/spf13/cobra"
 )
 
 var countFlag int
 var minutesFlag int
+var tagFlags []string
+var excludeTagFlags []string
 
 // SessionStats tracks statistics for a review session
 type SessionStats struct {
@@ -27,8 +31,43 @@ type SessionStats struct {
 	NextDue  *time.Time // nil if no cards due
 }
 
+// matchesTagFilters checks if a card matches the tag filters
+func matchesTagFilters(card *domain.Card, includeTags []string, excludeTags []string) bool {
+	// If include tags specified, card must have at least one
+	if len(includeTags) > 0 {
+		hasIncludeTag := false
+		for _, includeTag := range includeTags {
+			for _, cardTag := range card.Tags {
+				if cardTag == includeTag {
+					hasIncludeTag = true
+					break
+				}
+			}
+			if hasIncludeTag {
+				break
+			}
+		}
+		if !hasIncludeTag {
+			return false
+		}
+	}
+
+	// If exclude tags specified, card must not have any
+	if len(excludeTags) > 0 {
+		for _, excludeTag := range excludeTags {
+			for _, cardTag := range card.Tags {
+				if cardTag == excludeTag {
+					return false
+				}
+			}
+		}
+	}
+
+	return true
+}
+
 // runReviewSession executes a review session and returns session statistics
-func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minutesLimit int) (*SessionStats, error) {
+func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minutesLimit int, includeTags []string, excludeTags []string) (*SessionStats, error) {
 	// Fetch due cards
 	limit := countLimit
 	if limit <= 0 {
@@ -56,6 +95,32 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 	// Create store for loading cards
 	s := store.NewStore(cardsPath)
 
+	// Filter cards by tags if needed
+	var filteredStates []*domain.ReviewState
+	for _, state := range dueStates {
+		card, err := s.GetCard(state.CardID)
+		if err != nil {
+			// Skip cards we can't load
+			continue
+		}
+
+		if matchesTagFilters(card, includeTags, excludeTags) {
+			filteredStates = append(filteredStates, state)
+		}
+	}
+
+	if len(filteredStates) == 0 {
+		// Check if there are any cards due for next due time
+		nextDue, err := db.GetNextDueTime(database)
+		if err != nil {
+			// Non-fatal error, continue
+			stats.NextDue = nil
+		} else {
+			stats.NextDue = nextDue
+		}
+		return stats, nil
+	}
+
 	// Start time tracking
 	startTime := time.Now()
 	var timeLimit time.Duration
@@ -66,8 +131,11 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 	// Create reader for input
 	reader := bufio.NewReader(os.Stdin)
 
+	// Get terminal width for rendering
+	terminalWidth := ui.GetTerminalWidth()
+
 	// Review loop
-	for i, state := range dueStates {
+	for i, state := range filteredStates {
 		// Check time limit
 		if minutesLimit > 0 {
 			elapsed := time.Since(startTime)
@@ -94,10 +162,11 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 		}
 
 		// Show progress
-		fmt.Printf("\n--- Card %d/%d ---\n\n", i+1, len(dueStates))
+		fmt.Printf("\n--- Card %d/%d ---\n\n", i+1, len(filteredStates))
 
-		// Show question
-		fmt.Println(question)
+		// Show question with wrapping
+		renderedQuestion := ui.RenderCardContent(question, terminalWidth)
+		fmt.Println(renderedQuestion)
 		fmt.Println("\n[Press space or enter to reveal answer]")
 
 		// Wait for space or enter
@@ -112,8 +181,9 @@ func runReviewSession(database *sql.DB, cardsPath string, countLimit int, minute
 			}
 		}
 
-		// Show answer
-		fmt.Println("\n" + answer)
+		// Show answer with wrapping
+		renderedAnswer := ui.RenderCardContent(answer, terminalWidth)
+		fmt.Println("\n" + renderedAnswer)
 		fmt.Println("\nGrade: 1=Again, 2=Hard, 3=Good, 4=Easy")
 
 		// Wait for grade
@@ -207,7 +277,7 @@ var reviewCmd = &cobra.Command{
 		}
 
 		// Run review session
-		stats, err := runReviewSession(database, cardsPath, countFlag, minutesFlag)
+		stats, err := runReviewSession(database, cardsPath, countFlag, minutesFlag, tagFlags, excludeTagFlags)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
@@ -228,4 +298,6 @@ func init() {
 	// Add flags
 	reviewCmd.Flags().IntVar(&countFlag, "count", 0, "Maximum number of cards to review (0 = unlimited)")
 	reviewCmd.Flags().IntVar(&minutesFlag, "minutes", 0, "Maximum time in minutes (0 = unlimited)")
+	reviewCmd.Flags().StringArrayVar(&tagFlags, "tag", []string{}, "Include only cards with this tag (can be repeated)")
+	reviewCmd.Flags().StringArrayVar(&excludeTagFlags, "exclude-tag", []string{}, "Exclude cards with this tag (can be repeated)")
 }
