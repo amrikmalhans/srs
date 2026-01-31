@@ -317,3 +317,33 @@ func GetDueCards(db *sql.DB, limit int) ([]*domain.ReviewState, error) {
 
 	return states, nil
 }
+
+// GetNextDueTime returns the earliest due_at time for cards that are currently due.
+// Returns nil if no cards are due, or an error if the query fails.
+func GetNextDueTime(db *sql.DB) (*time.Time, error) {
+	query := `
+		SELECT MIN(due_at)
+		FROM review_state
+		WHERE due_at <= ?
+	`
+
+	now := time.Now().Format(time.RFC3339)
+	var dueAtStr sql.NullString
+
+	err := db.QueryRow(query, now).Scan(&dueAtStr)
+	if err == sql.ErrNoRows || !dueAtStr.Valid {
+		// No cards due
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get next due time: %w", err)
+	}
+
+	// Parse due_at
+	dueAt, err := time.Parse(time.RFC3339, dueAtStr.String)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse due_at: %w", err)
+	}
+
+	return &dueAt, nil
+}
