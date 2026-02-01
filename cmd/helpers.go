@@ -42,3 +42,9 @@ func handleError(err error, message string) {
 		os.Exit(1)
 	}
 }
+
+// getCardsPath returns the cards directory path, respecting the --cards-dir flag
+// and SRS_CARDS_DIR environment variable.
+func getCardsPath() (string, error) {
+	return config.CardsPath(cardsDirFlag)
+}

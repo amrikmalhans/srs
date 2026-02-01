@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/db"
 	"github.com/amrikmalhans/srs/internal/domain"
 	"github.com/amrikmalhans/srs/internal/scheduler"
@@ -266,7 +265,7 @@ var reviewCmd = &cobra.Command{
 		defer db.CloseDB(database)
 
 		// Get cards path
-		cardsPath, err := config.CardsPath()
+		cardsPath, err := getCardsPath()
 		if err != nil {
 			handleError(err, "failed to get cards path")
 		}

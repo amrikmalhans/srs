@@ -68,9 +68,23 @@ func DatabasePath(configDir string) string {
 	return filepath.Join(configDir, "srs.db")
 }
 
-// CardsPath returns the path to the cards directory
-// Defaults to "cards/" in the current working directory
-func CardsPath() (string, error) {
+// CardsPath returns the path to the cards directory.
+// If userSpecified is provided, it uses that path (from flag or env var).
+// Otherwise, defaults to "cards/" in the current working directory.
+func CardsPath(userSpecified string) (string, error) {
+	// Priority 1: User-specified path (from flag or env var)
+	if userSpecified != "" {
+		absPath, err := filepath.Abs(userSpecified)
+		if err != nil {
+			return "", fmt.Errorf("invalid cards path: %w", err)
+		}
+		if err := ensureDir(absPath); err != nil {
+			return "", err
+		}
+		return absPath, nil
+	}
+
+	// Priority 2: Default to "cards/" in current working directory
 	wd, err := os.Getwd()
 	if err != nil {
 		return "", fmt.Errorf("failed to get working directory: %w", err)

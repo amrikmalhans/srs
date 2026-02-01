@@ -61,6 +61,27 @@ go build -o srs .
 - `srs sync` - Sync database from card files
 - `srs reset` - Reset all review statistics (use `--force` to skip confirmation)
 
+## Configuration
+
+### Cards Directory
+
+By default, cards are stored in a `cards/` directory relative to where you run the command. You can specify a custom cards directory using:
+
+**Option 1: Command-line flag**
+```bash
+srs add --cards-dir ~/Desktop/cards
+srs review --cards-dir ~/Desktop/cards
+```
+
+**Option 2: Environment variable**
+```bash
+export SRS_CARDS_DIR=~/Desktop/cards
+srs add  # Uses Desktop/cards automatically
+srs review  # Uses Desktop/cards automatically
+```
+
+The flag takes precedence over the environment variable, and both take precedence over the default `./cards` directory.
+
 ## Card Format
 
 Cards are markdown files in the `cards/` directory with YAML frontmatter:

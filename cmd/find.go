@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/domain"
 	"github.com/amrikmalhans/srs/internal/store"
 	"github.com/amrikmalhans/srs/internal/ui"
@@ -128,7 +127,7 @@ var findCmd = &cobra.Command{
 		}
 
 		// Get cards path
-		cardsPath, err := config.CardsPath()
+		cardsPath, err := getCardsPath()
 		if err != nil {
 			handleError(err, "failed to get cards path")
 		}

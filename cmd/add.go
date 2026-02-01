@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/domain"
 	"github.com/amrikmalhans/srs/internal/store"
 
@@ -19,7 +18,7 @@ var addCmd = &cobra.Command{
 	Long:  `Create a new card file with template content in the cards directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get cards path
-		cardsPath, err := config.CardsPath()
+		cardsPath, err := getCardsPath()
 		if err != nil {
 			handleError(err, "failed to get cards path")
 		}

@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/db"
 
 	"github.com/spf13/cobra"
@@ -23,7 +22,7 @@ var sprintCmd = &cobra.Command{
 		defer db.CloseDB(database)
 
 		// Get cards path
-		cardsPath, err := config.CardsPath()
+		cardsPath, err := getCardsPath()
 		if err != nil {
 			handleError(err, "failed to get cards path")
 		}

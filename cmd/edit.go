@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/db"
 	"github.com/amrikmalhans/srs/internal/store"
 
@@ -103,7 +102,7 @@ var editCmd = &cobra.Command{
 		}
 
 		// Get cards path
-		cardsPath, err := config.CardsPath()
+		cardsPath, err := getCardsPath()
 		if err != nil {
 			handleError(err, "failed to get cards path")
 		}

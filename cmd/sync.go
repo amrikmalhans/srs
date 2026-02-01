@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/db"
 	"github.com/amrikmalhans/srs/internal/domain"
 	"github.com/amrikmalhans/srs/internal/scheduler"
@@ -23,7 +22,7 @@ var syncCmd = &cobra.Command{
 	Long:  `Scan markdown cards and update database metadata and review state.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get cards path
-		cardsPath, err := config.CardsPath()
+		cardsPath, err := getCardsPath()
 		if err != nil {
 			handleError(err, "failed to get cards path")
 		}

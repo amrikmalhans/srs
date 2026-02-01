@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"syscall"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/db"
 
 	"github.com/spf13/cobra"
@@ -22,7 +21,7 @@ func runSprintProgrammatically() error {
 	defer db.CloseDB(database)
 
 	// Get cards path
-	cardsPath, err := config.CardsPath()
+	cardsPath, err := getCardsPath()
 	if err != nil {
 		return fmt.Errorf("failed to get cards path: %w", err)
 	}

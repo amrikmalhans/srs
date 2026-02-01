@@ -48,31 +48,50 @@ func TestDatabasePath(t *testing.T) {
 }
 
 func TestCardsPath(t *testing.T) {
-	// Create a temporary directory for testing
-	tmpDir := t.TempDir()
-	originalWd, _ := os.Getwd()
-	defer os.Chdir(originalWd)
-
-	os.Chdir(tmpDir)
-
-	got, err := CardsPath()
-	if err != nil {
-		t.Errorf("CardsPath() error = %v", err)
-		return
+	tests := []struct {
+		name          string
+		userSpecified string
+		wantErr       bool
+	}{
+		{
+			name:          "default path (empty string)",
+			userSpecified: "",
+			wantErr:       false,
+		},
+		{
+			name:          "user specified path",
+			userSpecified: "/tmp/test-cards",
+			wantErr:       false,
+		},
 	}
 
-	// Verify cards directory was created
-	if _, err := os.Stat(got); os.IsNotExist(err) {
-		t.Errorf("CardsPath() did not create cards directory at %v", got)
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := CardsPath(tt.userSpecified)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("CardsPath() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && got == "" {
+				t.Error("CardsPath() returned empty path")
+				return
+			}
 
-	// Verify it's actually a directory
-	info, err := os.Stat(got)
-	if err != nil {
-		t.Errorf("CardsPath() returned invalid path: %v", err)
-		return
-	}
-	if !info.IsDir() {
-		t.Errorf("CardsPath() did not create a directory")
+			// Verify cards directory was created
+			if _, err := os.Stat(got); os.IsNotExist(err) {
+				t.Errorf("CardsPath() did not create cards directory at %v", got)
+				return
+			}
+
+			// Verify it's actually a directory
+			info, err := os.Stat(got)
+			if err != nil {
+				t.Errorf("CardsPath() returned invalid path: %v", err)
+				return
+			}
+			if !info.IsDir() {
+				t.Errorf("CardsPath() did not create a directory")
+			}
+		})
 	}
 }

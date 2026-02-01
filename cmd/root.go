@@ -14,6 +14,7 @@ import (
 )
 
 var cfgFile string
+var cardsDirFlag string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -44,6 +45,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is resolved automatically)")
+	rootCmd.PersistentFlags().StringVar(&cardsDirFlag, "cards-dir", "", "cards directory path (default: ./cards in current directory, can also be set via SRS_CARDS_DIR env var)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -76,5 +78,13 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		// Config file found and parsed successfully
 		// This is optional, so we don't error if it doesn't exist
+	}
+
+	// Bind cards-dir flag to environment variable
+	// If flag is not set, check environment variable
+	if cardsDirFlag == "" {
+		if envCardsDir := os.Getenv("SRS_CARDS_DIR"); envCardsDir != "" {
+			cardsDirFlag = envCardsDir
+		}
 	}
 }

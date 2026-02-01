@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/amrikmalhans/srs/internal/config"
 	"github.com/amrikmalhans/srs/internal/store"
 	"github.com/amrikmalhans/srs/internal/ui"
 
@@ -18,7 +17,7 @@ var listCmd = &cobra.Command{
 	Long:  `List all cards and display statistics including total count and tag counts.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get cards path
-		cardsPath, err := config.CardsPath()
+		cardsPath, err := getCardsPath()
 		if err != nil {
 			handleError(err, "failed to get cards path")
 		}
