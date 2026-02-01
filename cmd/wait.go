@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"syscall"
 
-	"srs/internal/config"
-	"srs/internal/db"
+	"github.com/amrikmalhans/srs/internal/config"
+	"github.com/amrikmalhans/srs/internal/db"
 
 	"github.com/spf13/cobra"
 )

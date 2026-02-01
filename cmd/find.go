@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"srs/internal/config"
-	"srs/internal/domain"
-	"srs/internal/store"
-	"srs/internal/ui"
+	"github.com/amrikmalhans/srs/internal/config"
+	"github.com/amrikmalhans/srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/store"
+	"github.com/amrikmalhans/srs/internal/ui"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"

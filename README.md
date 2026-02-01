@@ -4,7 +4,32 @@ A CLI spaced repetition system (SRS) for managing flashcards. Cards are stored a
 
 ## Installation
 
+### Using Go (Recommended)
+
+Install directly from GitHub:
+
 ```bash
+go install github.com/amrikmalhans/srs@latest
+```
+
+Make sure `~/go/bin` is in your PATH. Add this to your `~/.zshrc` (or `~/.bashrc`):
+
+```bash
+export PATH="$HOME/go/bin:$PATH"
+```
+
+Then reload your shell:
+```bash
+source ~/.zshrc  # or source ~/.bashrc
+```
+
+### Building from Source
+
+If you prefer to build from source:
+
+```bash
+git clone https://github.com/amrikmalhans/srs.git
+cd srs
 go build -o srs .
 ```
 

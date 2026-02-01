@@ -1,6 +1,6 @@
 package main
 
-import "srs/cmd"
+import "github.com/amrikmalhans/srs/cmd"
 
 func main() {
 	cmd.Execute()

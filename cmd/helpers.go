@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"srs/internal/config"
-	"srs/internal/db"
+	"github.com/amrikmalhans/srs/internal/config"
+	"github.com/amrikmalhans/srs/internal/db"
 )
 
 const (

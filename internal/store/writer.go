@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/domain"
 
 	"go.yaml.in/yaml/v3"
 )

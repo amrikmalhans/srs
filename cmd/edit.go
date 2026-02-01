@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"srs/internal/config"
-	"srs/internal/db"
-	"srs/internal/store"
+	"github.com/amrikmalhans/srs/internal/config"
+	"github.com/amrikmalhans/srs/internal/db"
+	"github.com/amrikmalhans/srs/internal/store"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/domain"
 
 	"github.com/google/uuid"
 	"go.yaml.in/yaml/v3"

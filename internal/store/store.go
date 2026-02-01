@@ -7,7 +7,7 @@ package store
 import (
 	"fmt"
 
-	"srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/domain"
 
 	"github.com/google/uuid"
 )

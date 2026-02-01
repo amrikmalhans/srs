@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sort"
 
-	"srs/internal/config"
-	"srs/internal/store"
-	"srs/internal/ui"
+	"github.com/amrikmalhans/srs/internal/config"
+	"github.com/amrikmalhans/srs/internal/store"
+	"github.com/amrikmalhans/srs/internal/ui"
 
 	"github.com/spf13/cobra"
 )

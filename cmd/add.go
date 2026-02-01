@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"srs/internal/config"
-	"srs/internal/domain"
-	"srs/internal/store"
+	"github.com/amrikmalhans/srs/internal/config"
+	"github.com/amrikmalhans/srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/store"
 
 	"github.com/spf13/cobra"
 )

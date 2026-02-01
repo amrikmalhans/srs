@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"srs/internal/db"
+	"github.com/amrikmalhans/srs/internal/db"
 
 	"github.com/spf13/cobra"
 )

@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"srs/internal/db"
-	"srs/internal/ui"
+	"github.com/amrikmalhans/srs/internal/db"
+	"github.com/amrikmalhans/srs/internal/ui"
 
 	"github.com/spf13/cobra"
 )

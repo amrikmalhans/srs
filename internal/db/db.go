@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/domain"
 
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"

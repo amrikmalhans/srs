@@ -1,19 +1,20 @@
-module srs
+module github.com/amrikmalhans/srs
 
 go 1.24.0
 
 toolchain go1.24.12
 
 require (
+	github.com/fatih/color v1.18.0
 	github.com/google/uuid v1.6.0
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	go.yaml.in/yaml/v3 v3.0.4
+	golang.org/x/term v0.39.0
 )
 
 require (
-	github.com/fatih/color v1.18.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -27,6 +28,5 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/term v0.39.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 )

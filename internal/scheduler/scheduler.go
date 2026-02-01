@@ -8,7 +8,7 @@ import (
 	"math"
 	"time"
 
-	"srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/domain"
 )
 
 // Grade represents user's rating of a card review

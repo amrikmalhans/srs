@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"srs/internal/config"
-	"srs/internal/db"
-	"srs/internal/domain"
-	"srs/internal/scheduler"
-	"srs/internal/store"
+	"github.com/amrikmalhans/srs/internal/config"
+	"github.com/amrikmalhans/srs/internal/db"
+	"github.com/amrikmalhans/srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/scheduler"
+	"github.com/amrikmalhans/srs/internal/store"
 
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"

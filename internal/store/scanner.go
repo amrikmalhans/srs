@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"srs/internal/domain"
+	"github.com/amrikmalhans/srs/internal/domain"
 )
 
 // ScanCards scans the cards directory and returns all valid cards
